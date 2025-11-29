@@ -2,7 +2,7 @@
 
 ## 1. 概述 (Overview)
 
-本项目的 ECS (Entity-Component-System) 框架采用了一种 **混合架构 (Hybrid Architecture)**。它结合了 **Rust Bevy Engine** 的现代化 API 设计风格与 **Lua ECS (DSE)** 的灵活立即响应机制。
+本项目的 ECS (Entity-Component-System) 框架采用了一种 **混合架构 (Hybrid Architecture)**。它结合了 **Rust Bevy Engine** 的现代化 API 设计风格与 **Lua ECS (ecs)** 的灵活立即响应机制。
 
 **核心设计理念：**
 *   **结构化数据流 (Bevy-like)**：使用 `World`, `System`, `Query`, `Resource` 等概念管理游戏状态，确保数据流向清晰，易于维护。
@@ -14,18 +14,18 @@
 
 下表展示了本框架 API 与 Bevy Engine 及原 Lua ECS 的对应关系。
 
-| 概念 | 本框架 API (TypeScript) | Bevy Engine (Rust) | Lua ECS (DSE) | 说明 |
+| 概念 | 本框架 API (TypeScript) | Bevy Engine (Rust) | Lua ECS | 说明 |
 | :--- | :--- | :--- | :--- | :--- |
-| **世界** | `ecs` / `World` | `App` / `World` | `dse` (全局命名空间) | ECS 上下文容器 |
-| **创建实体** | `ecs.spawn()` | `commands.spawn()` | `dse.createEntity()` | 返回 `EntityCommands` 用于链式构建 |
+| **世界** | `ecs` / `World` | `App` / `World` | `ecs` (全局命名空间) | ECS 上下文容器 |
+| **创建实体** | `ecs.spawn()` | `commands.spawn()` | `ecs.createEntity()` | 返回 `EntityCommands` 用于链式构建 |
 | **添加组件** | `.insert(new Comp())` | `.insert(Comp)` | `entity:addComp(Comp)` | |
 | **获取组件** | `entity.get(Comp)` | `Query.get(entity)` | `entity:getComp(Comp)` | 直接从实体获取组件 |
-| **获取资源** | `ecs.getResource(Res)` | `Res<T>` | `dse.getSingleComp(Res)` | 全局单例组件 |
-| **缓冲事件** | `EventWriter.push()` | `EventWriter.send()` | `dse.dispatchEvent()` | **跨帧**，下一帧处理 (解耦) |
+| **获取资源** | `ecs.getResource(Res)` | `Res<T>` | `ecs.getSingleComp(Res)` | 全局单例组件 |
+| **缓冲事件** | `EventWriter.push()` | `EventWriter.send()` | 无 | **跨帧**，下一帧处理 (解耦) |
 | **立即事件** | `ecs.trigger(evt)` | `commands.trigger()` | `event:trigger()` | **同步**，当前栈执行 (强逻辑) |
-| **监听事件** | `ecs.addObserver()` | `app.observe()` | `dse.createEventSystem()` | 监听立即事件 |
-| **初始化Hook**| `ecs.addInitializeSystem`| `ComponentHooks` (OnAdd) | `dse.createCompInitializeSystem` | 组件添加时触发 |
-| **销毁Hook** | `ecs.addDestroySystem` | `ComponentHooks` (OnRemove)| `dse.createCompDestroySystem` | 组件移除前触发 |
+| **监听事件** | `ecs.addObserver()` | `app.observe()` | `ecs.createEventSystem()` | 监听立即事件 |
+| **初始化Hook**| `ecs.addInitializeSystem`| `ComponentHooks` (OnAdd) | `ecs.createCompInitializeSystem` | 组件添加时触发 |
+| **销毁Hook** | `ecs.addDestroySystem` | `ComponentHooks` (OnRemove)| `ecs.createCompDestroySystem` | 组件移除前触发 |
 
 ---
 
